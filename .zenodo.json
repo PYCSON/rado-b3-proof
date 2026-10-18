@@ -1,0 +1,17 @@
+{
+  "title": "The three-colour Rado numbers of ax + 3y = 3z (computer-assisted proof candidate)",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "access_right": "open",
+  "license": "cc-by-4.0",
+  "version": "0.1.0",
+  "creators": [
+    {"name": "Sun, Puyi"}
+  ],
+  "description": "<p>Computer-assisted proof candidate that R<sub>3</sub>(ax + 3y = 3z) = a<sup>3</sup> + a<sup>2</sup> + 7a + 1 for every integer a &ge; 4 with 3 not dividing a. This is the case b = 3 of Conjecture 1.1 of T. Ahmed, L. Zaman and C. Bright (arXiv:2505.12085); the lower bound is their Theorem 1.3, and this record contains a proof of the upper bound.</p><p>The record contains the proof (proof/proof.pdf and its LaTeX source), 126 propositional formulas with LRAT unsatisfiability certificates checked by lrat-check and cake_lpr, the generators and audit scripts, a mechanical check of the hand-proved parts, and SHA-256 sums of every file.</p><p>Status: not peer reviewed. The work was developed with substantial assistance from AI systems (Anthropic Claude and OpenAI GPT); see the README and the section on the use of AI tools in the proof.</p>",
+  "notes": "Not peer reviewed. Licensing: text and data CC BY 4.0; code MIT (see LICENSE in the archive).",
+  "keywords": ["Rado numbers", "Ramsey theory", "SAT", "LRAT", "computer-assisted proof"],
+  "related_identifiers": [
+    {"identifier": "arXiv:2505.12085", "relation": "references", "scheme": "arxiv"}
+  ]
+}
