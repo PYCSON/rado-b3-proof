@@ -1,0 +1,599 @@
+\documentclass[11pt]{amsart}
+\usepackage[margin=1in]{geometry}
+\usepackage{amssymb,amsmath,booktabs,longtable}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\cA}{\mathsf{A}}\newcommand{\cB}{\mathsf{B}}\newcommand{\cC}{\mathsf{C}}
+\newcommand{\Pz}{P_0}
+\newcommand{\tri}[3]{\langle #1,\,#2,\,#3\rangle}
+\newcommand{\Bset}{\mathcal B}
+
+\title{The three-colour Rado numbers of $ax+3y=3z$}
+\author{Puyi Sun}
+\date{18 October 2026. Computer-assisted proof candidate; not peer reviewed.}
+
+\begin{document}
+\begin{abstract}
+For every integer $a\ge4$ with $3\nmid a$ we prove that $R_3(ax+3y=3z)=a^3+a^2+7a+1$, the case $b=3$ of a
+conjecture of Ahmed, Zaman and Bright. The lower bound is their Theorem~1.3; this document proves the upper bound.
+The proof combines elementary arguments with $124$ propositional unsatisfiability certificates in LRAT format,
+each checked by two independent proof checkers, one of them formally verified. A fixed finite system of constraints
+whose vertices are integer polynomials in $k=\lceil a/3\rceil$ handles all large $a$ simultaneously.
+\end{abstract}
+\maketitle
+
+\tableofcontents
+
+%=====================================================================
+\section{Statement}
+
+For a linear equation $\mathcal E$ in three variables, the $3$-colour Rado number $R_3(\mathcal E)$ is the least
+positive integer $N$ such that every colouring of $[1,N]=\{1,\dots,N\}$ with three colours contains positive integers
+$x,y,z\in[1,N]$ of the same colour satisfying $\mathcal E$. The integers $x,y,z$ need not be distinct.
+
+\begin{theorem}[Ahmed--Zaman--Bright {\cite[Thm.~1.3]{AZB}}]\label{thm:azb}
+For coprime integers $a>b\ge3$ with $a^2+a+b>b^2+ba$, $R_3(ax+by=bz)\ge a^3+a^2+(2b+1)a+1$.
+\end{theorem}
+
+For $b=3$ the hypotheses mean $a\ge4$ and $3\nmid a$. Ahmed, Zaman and Bright conjectured equality
+\cite[Conj.~1.1]{AZB}.
+
+\begin{theorem}\label{thm:main}
+For every integer $a\ge4$ with $3\nmid a$,
+\[R_3(ax+3y=3z)=a^3+a^2+7a+1 .\]
+\end{theorem}
+
+By Theorem~\ref{thm:azb} it remains to prove the upper bound:
+
+\begin{theorem}[upper bound]\label{thm:upper}
+Let $a\ge4$, $3\nmid a$, and $L=a^3+a^2+7a+1$. Every $3$-colouring of $[1,L]$ contains a monochromatic solution of
+$ax+3y=3z$.
+\end{theorem}
+
+\subsection*{Structure of the proof}
+\begin{enumerate}
+\item $4\le a\le 26$: sixteen certificates (Section~\ref{sec:small}).
+\item $a\ge13$, Lemma~\ref{lem:W} (computer-assisted): the colours of $3,6,\dots,24$ form one of $53$ patterns.
+\item $a\ge23$, Lemma~\ref{lem:r76} (computer-assisted, $106$ certificates independent of $a$) and
+Lemma~\ref{lem:e4}: the pattern is $\Pz$.
+\item $a\ge7$, Section~\ref{sec:p0} (no computer): the pattern $\Pz$ forces the colours of all multiples of $3$ up to
+$3(a^2+a+1)$ and then $L$ admits no colour.
+\end{enumerate}
+The thresholds $13,23,7$ are all at most $26$, so (1) and (2)--(4) together cover all $a\ge4$ with $3\nmid a$.
+
+%=====================================================================
+\section{Notation and the three families of constraints}\label{sec:setup}
+
+Throughout, $a\ge4$ and $3\nmid a$. Put
+\[H=a^2+a+1,\qquad M=H-3=a^2+a-2,\qquad F=H+5=a^2+a+6,\]
+\[L=1+a(H+6)=a^3+a^2+7a+1 .\]
+
+\subsection{Reduction of the equation}
+If $ax+3y=3z$ then $3\mid ax$, and since $3\nmid a$ we get $3\mid x$. Writing $x=3w$ gives $z=y+aw$.
+
+Let $c\colon[1,L]\to\{\text{three colours}\}$ be a colouring. We only look at two arithmetic progressions:
+\[h(t)=c(3t)\quad(1\le t\le H),\qquad f(q)=c(1+aq)\quad(0\le q\le H+6).\]
+Note $3H=3a^2+3a+3\le L-1$, $1+aF=L-a\le L-1$ and $1+a(H+6)=L$. Thus $h$ and $f|_{[0,F]}$ only involve integers in
+$[1,L-1]$, and $f(H+6)=c(L)$.
+
+\subsection{The constraints}
+We use the following solutions of $ax+3y=3z$; in each case all three entries lie in $[1,L]$.
+
+\begin{description}
+\item[(BB)] For integers $u\ge1$, $s\ge1$ with $3u\le H$ and $s+au\le H$: $(x,y,z)=(9u,\,3s,\,3(s+au))$. Indeed
+$a\cdot9u+3\cdot3s=3\cdot3(s+au)$. Hence $h(3u),h(s),h(s+au)$ are not all equal. We write such a triple of
+$h$-indices as $\tri{3u}{s}{s+au}$ and call it a \emph{BB-triple}; its first entry is a multiple of $3$ and its third
+entry is the second plus $a\cdot(\text{first}/3)$.
+\item[(AB)] For integers $t\ge1$, $q\ge0$ with $t\le H$ and $q+t\le H+6$: $(x,y,z)=(3t,\,1+aq,\,1+a(q+t))$. Indeed
+$3at+3(1+aq)=3(1+a(q+t))$. Hence $h(t),f(q),f(q+t)$ are not all equal. In words: \emph{two positions $q<q'$ of $f$
+with $f(q)=f(q')$ must not have this common colour equal to $h(q'-q)$.}
+\item[(ID)] If $3s=1+aq$ with $1\le s\le H$ and $0\le q\le H+6$, then $h(s)=f(q)$, since both are $c(3s)$.
+\end{description}
+
+A BB-triple may have repeated entries (for example $3u=s$); it then constrains only two values of $h$, which is
+legitimate because solutions need not consist of distinct integers.
+
+A colouring is \emph{solution-free} on a set $S$ if no monochromatic solution has all three entries in $S$.
+
+\subsection{Relaxations}\label{sec:relax}
+Each computational model below is a propositional formula whose variables encode colours of some of the integers
+above. Its clauses are of two kinds:
+\begin{itemize}
+\item \emph{base clauses}: each variable takes exactly one colour, and some of the constraints (BB), (AB), (ID);
+\item \emph{case clauses}, described explicitly with each model: a symmetry normalisation, a prescribed prefix, a
+first-occurrence condition, or a target condition (possibly built with auxiliary variables that are only required to
+imply their defining conditions).
+\end{itemize}
+Each model is used to rule out one specified class of colourings, namely the solution-free colourings of $[1,L-1]$
+(resp.\ $[1,L]$) that satisfy its case conditions (after renaming colours where a normalisation is used). A
+colouring in that class satisfies every base clause, because each base clause expresses a genuine solution or the
+fact that each integer has one colour; it satisfies the case clauses by assumption, setting each auxiliary
+variable to true exactly when its defining condition holds. Hence it induces a satisfying assignment, and if the
+model is unsatisfiable the class is empty. That the classes ruled out in this way cover all cases is argued
+separately in each lemma.
+
+In the polynomial models of Section~\ref{sec:W} two distinct polynomials in $k$ are treated as distinct variables
+even when they take equal values for some $k$. A real colouring assigns equal colours to equal integers, so it still
+induces an assignment satisfying all base clauses; the model merely omits the constraints ``these two variables are
+equal''.
+
+\subsection{Words, prefixes and $h^\ast$}
+Colours may be renamed freely. For a word $w_1w_2\cdots w_n$ over the three colours, its \emph{normalisation} is
+obtained by renaming the colours $\cA,\cB,\cC$ in order of first appearance. The \emph{prefix} of a colouring is the
+normalisation of $h(1)h(2)\cdots h(8)$. Let
+\[\Pz=\cA\cA\cB\cA\cA\cB\cA\cA .\]
+Let $\Bset=\{3,6,9,\dots,3a\}$ (the multiples of $3$ in $[3,3a]$) and define $h^\ast(t)=\cB$ for $t\in\Bset$ and
+$h^\ast(t)=\cA$ otherwise.
+
+%=====================================================================
+\section{Small $a$}\label{sec:small}
+
+\begin{lemma}\label{lem:small}
+Theorem~\ref{thm:upper} holds for $a\in\{4,5,7,8,10,11,13,14,16,17,19,20,22,23,25,26\}$.
+\end{lemma}
+\begin{proof}[Proof (computer-assisted)]
+Let $U(a)=\{3t:1\le t\le H\}\cup\{1+aq:0\le q\le H+6\}\subseteq[1,L]$ (its largest element is $L$). The formula
+$\mathtt{U}a$ has three Boolean variables per element of $U(a)$, the clauses ``at least one colour'' and ``at most
+one colour'' for each element, and, for every ordered triple $(x,y,z)\in U(a)^3$ with $ax+3y=3z$ and every colour,
+the clause ``$x,y,z$ do not all have this colour''. In addition it fixes $c(1)=\cA$ and $c(3)\in\{\cA,\cB\}$, which
+is no loss of generality after renaming colours. The formula is unsatisfiable for each listed $a$
+(Section~\ref{sec:cert}). A colouring of $[1,L]$ without monochromatic solution, after renaming its colours so that
+$c(1)=\cA$ and $c(3)\in\{\cA,\cB\}$, would restrict to a satisfying assignment.
+\end{proof}
+
+From now on $a\ge27$ (the arguments below need only $a\ge23$).
+
+%=====================================================================
+\section{The polynomial window (Lemma W)}\label{sec:W}
+
+\subsection{Parametrisation}
+For $a\ge13$ with $3\nmid a$ put $k=\lceil a/3\rceil$ and $\rho=a-3k\in\{-2,-1\}$. Then $a=3k+\rho$ and $k\ge5$. The
+integer $k$ is determined by $a$; consequently $a$, $ak=3k^2+\rho k$ and $a(k+1)=3k^2+(3+\rho)k+\rho$ are polynomials
+in $k$ with integer coefficients, and so is every position used in this section.
+
+\subsection{The model $\mathcal W_\rho$}
+\emph{$f$-vertices.} The positions
+\[q=\lambda a+3kD+e,\]
+for the triples $(\lambda,D,e)$ listed in Table~\ref{tab:window}, regarded as integer polynomials in $k$ after
+substituting $a=3k+\rho$. Equal polynomials are identified.
+
+\begin{table}[h]\centering
+\begin{tabular}{ccc}\toprule
+$\lambda$ & $D$ & range of $e$\\\midrule
+$0$ & $0$ & $0\le e\le 7$\\ $0$ & $1$ & $-7\le e\le 7$\\ $0$ & $2$ & $-7\le e\le 0$\\
+$k$ & $1$ & $-1\le e\le 7$\\ $k$ & $2$ & $-7\le e\le 7$\\ $k$ & $3$ & $-7\le e\le 4$\\
+$k+1$ & $1$ & $-2\le e\le 7$\\ $k+1$ & $2$ & $-7\le e\le 7$\\ $k+1$ & $3$ & $-7\le e\le 4$\\\bottomrule
+\end{tabular}
+\caption{The $f$-vertices of the window.}\label{tab:window}
+\end{table}
+
+\emph{$h$-vertices.} The constants $1,2,\dots,8$; the heads $3,6,3k,3k+3$; and every difference $q'-q$ of two
+$f$-vertices which, as a polynomial, takes values $\ge1$ for every integer $k\ge5$.
+
+\emph{Range.} Every $h$-vertex takes values in $[1,H]$ and every $f$-vertex in $[0,F]$ for every integer $k\ge5$.
+(For each quadratic this is decided exactly from its leading coefficient and the integer minimiser.) Hence every
+constraint below is an instance of (AB) or (BB) inside $[1,L-1]$.
+
+\emph{Clauses.}
+\begin{itemize}
+\item exactly one colour per vertex;
+\item (AB) for every pair of $f$-vertices $q,q'$ with $q'-q\ge1$ for all $k\ge5$: $h(q'-q),f(q),f(q')$ not all equal;
+\item (BB) for every head $3u$ with $u\in\{1,2,k,k+1\}$ and every $h$-vertex $s$ such that $s+au$ (as a polynomial)
+is also an $h$-vertex: $h(3u),h(s),h(s+au)$ not all equal;
+\item the target: one clause, built with auxiliary variables that are only required to imply their defining
+conditions, stating that the colouring of $h(1),\dots,h(8)$ uses three colours, or has $h(3)\ne h(6)$, or has as
+normalisation one of the eleven words
+\[\begin{gathered}
+\cA\cA\cA\cA\cA\cA\cA\cA,\ \cA\cA\cA\cA\cA\cA\cA\cB,\ \cA\cA\cA\cA\cA\cA\cB\cA,\ \cA\cA\cA\cA\cB\cA\cA\cA,\
+\cA\cA\cA\cA\cB\cA\cB\cA,\ \cA\cA\cA\cB\cA\cA\cA\cA,\\
+\cA\cB\cA\cA\cA\cA\cA\cA,\ \cA\cB\cB\cB\cA\cB\cA\cB,\ \cA\cB\cB\cB\cA\cB\cB\cB,\ \cA\cB\cB\cB\cB\cB\cA\cB,\
+\cA\cB\cB\cB\cB\cB\cB\cB.
+\end{gathered}\]
+\end{itemize}
+The colours of $h(1),\dots,h(8)$ are not fixed in the model.
+
+\subsection{The lemma}
+Call a word $\cA w_2w_3\cdots w_8$ over $\{\cA,\cB\}$ with $w_3=w_6$ \emph{admissible} if it is not one of the eleven
+words above. There are $2^6=64$ words $\cA w_2\cdots w_8$ over $\{\cA,\cB\}$ with $w_3=w_6$, hence $53$ admissible
+words; they are listed in Appendix~\ref{app:53}, and $\Pz$ is one of them.
+
+\begin{lemma}[Lemma W]\label{lem:W}
+Let $a\ge13$, $3\nmid a$, and let $c$ be a solution-free $3$-colouring of $[1,L-1]$. Then the prefix of $c$ is an
+admissible word.
+\end{lemma}
+\begin{proof}[Proof (computer-assisted)]
+The prefix of a colouring that uses at most two colours on $h(1..8)$ and has $h(3)=h(6)$ is a word
+$\cA w_2\cdots w_8$ over $\{\cA,\cB\}$ with $w_3=w_6$. So if the prefix is not admissible, the target clause holds.
+For $\rho=-2$ and $\rho=-1$ the formula $\mathcal W_\rho$ is unsatisfiable (Section~\ref{sec:cert}). Since $c$
+induces a satisfying assignment of $\mathcal W_\rho$ whenever the target holds (Section~\ref{sec:relax}), the target
+fails, and the prefix is admissible.
+\end{proof}
+
+%=====================================================================
+\section{From $53$ prefixes to $\Pz$}\label{sec:53}
+
+\subsection{The chain lemma}
+\begin{lemma}[chain]\label{lem:chain}
+Let $m\ge1$ and let $g\colon[1,m]\to\{X,Y\}$ be a two-colouring with no monochromatic BB-triple inside $[1,m]$.
+Suppose $g(3)=X$, $k\ge2$, $k(a+3)+a\le m$, and $g(3j)=X$ for $1\le j<k$. Then $g(3k)=X$.
+\end{lemma}
+\begin{proof}
+Suppose $g(3k)=Y$ and put $N=k(a+3)=3k+ak$. All indices below are at most $N+a\le m$. The following are BB-triples:
+\begin{center}\begin{tabular}{lll}\toprule
+triple & $u$ & check\\\midrule
+$\tri{3k}{3k}{N}$ & $k$ & $3k+ak=N$\\
+$\tri{3(k-1)}{3k+a}{N}$ & $k-1$ & $3k+a+a(k-1)=N$\\
+$\tri{3}{N}{N+a}$ & $1$ & $N+a=N+a$\\
+$\tri{3k}{3k+a}{N+a}$ & $k$ & $3k+a+ak=N+a$\\\bottomrule
+\end{tabular}\end{center}
+From the first triple, $g(N)=X$. In the second, $g(3(k-1))=X$ (as $k-1\ge1$) and $g(N)=X$, so $g(3k+a)=Y$. In the
+third, $g(3)=g(N)=X$, so $g(N+a)=Y$. Now the fourth triple is monochromatic of colour $Y$, a contradiction.
+\end{proof}
+
+\subsection{Two colours force $\Pz$}
+\begin{lemma}[E4]\label{lem:e4}
+Let $a\ge23$, $J=\lceil(2a+8)/3\rceil$ and $m_0=J(a+3)+a$. Let $c$ be a solution-free colouring of $[1,L-1]$ such that
+$h$ takes only two colours on $[1,m_0]$. Then the prefix of $c$ is $\Pz$.
+\end{lemma}
+\begin{proof}
+One checks $m_0\le H$ for $a\ge23$ (Section~\ref{sec:ranges}), so $h$ is defined on $[1,m_0]$, and it has no
+monochromatic BB-triple there. Let $X=h(3)$ and $Y$ the other colour. Lemma~\ref{lem:chain} with $m=m_0$, applied
+for $k=2,3,\dots,J$ in turn, gives $h(3k)=X$ for $1\le k\le J$.
+
+Let $d\in\{1,2,4,5,7,8\}$. Since $3\nmid d$ and $3\nmid a$, there is $u\in\{1,2\}$ with $3\mid au+d$. Put
+$v=(au+d)/3$; then $1\le v\le(2a+8)/3\le J$. Now $\tri{3u}{d}{3v}$ is a BB-triple ($d+au=3v\le 3J\le m_0$), and
+$h(3u)=h(3v)=X$ because $u,v\le J$. Hence $h(d)=Y$. So $h(1)\cdots h(8)=YYXYYXYY$, whose normalisation is $\Pz$.
+\end{proof}
+
+\subsection{The third colour does not appear early}
+\begin{lemma}[computer-assisted, independent of $a$]\label{lem:r76}
+Let $a\ge23$, let $c$ be a solution-free colouring of $[1,L-1]$ whose prefix $X$ is an admissible word, and let
+$\cC$ be the colour not occurring in $X$ (after the normalising renaming). Then $h(t)\ne\cC$ for $9\le t\le m_0$.
+\end{lemma}
+\begin{proof}[Proof (computer-assisted)]
+For each admissible $X$ Appendix~\ref{app:53} gives an integer $K=K_X$ with $10\le K\le 68$. Suppose $\cC$ occurs in
+$h(9..m_0)$ and let $t_0$ be its first occurrence. Then either $t_0\le K-1$, or $K\le t_0\le m_0$; these two cases
+are exhaustive.
+
+\emph{Early case, $9\le t_0\le K-1$.} Put $F_X=K+79$. The formula $\mathtt{I}_{X}$ has variables for $h(1),\dots,
+h(F_X)$ and $f(0),\dots,f(F_X)$ (three colours each, exactly one colour per vertex), the unit clauses $h(1..8)=X$,
+the clause ``$h(t)=\cC$ for some $t$ with $9\le t\le K-1$'', and every (AB) constraint
+$h(t),f(q),f(q+t)$ not all equal with $1\le t$, $0\le q$, $q+t\le F_X$. All positions satisfy $F_X\le147\le\min(H,F)$
+for $a\ge23$, so this is a relaxation, and $\mathtt I_X$ is unsatisfiable.
+
+\emph{Late case, $K\le t_0\le m_0$.} By minimality of $t_0$, $h(t)\in\{\cA,\cB\}$ for $9\le t\le K-1$. Consider the
+two rows $f(0),\dots,f(K-1)$ and $f(t_0),\dots,f(t_0+K-1)$. Since $t_0+K-1\le m_0+67\le F$ for $a\ge23$
+(Section~\ref{sec:ranges}), all these are values of $f$ on $[0,F]$, and the rows are disjoint because $t_0\ge K$.
+The formula $\mathtt R_X$ has one Boolean variable for each $h(t)$, $9\le t\le K-1$ (colour $\cA$ or $\cB$), three
+colour variables for each of the $2K$ cells, exactly one colour per cell, and the clauses
+\begin{itemize}
+\item for each row, each $d\in[1,K-1]$ and each $i\in[0,K-1-d]$: cells $i$ and $i+d$ of the row are not both of
+colour $h(d)$ (with $h(d)$ given by $X$ for $d\le8$ and by the Boolean variable for $d\ge9$); this is (AB) with
+difference $d$;
+\item for each $i\in[0,K-1]$: cell $i$ of the first row and cell $i$ of the second row are not both $\cC$; this is
+(AB) with difference $t_0$, because $h(t_0)=\cC$.
+\end{itemize}
+The formula $\mathtt R_X$ does not depend on $t_0$ or $a$, and it is unsatisfiable.
+
+In both cases the colouring would induce a satisfying assignment, a contradiction.
+\end{proof}
+
+\begin{corollary}\label{cor:p0}
+Let $a\ge23$ and let $c$ be a solution-free colouring of $[1,L-1]$. Then the prefix of $c$ is $\Pz$.
+\end{corollary}
+\begin{proof}
+By Lemma~\ref{lem:W} the prefix $X$ is admissible, so $h(1..8)$ uses at most the two colours $\cA,\cB$ of $X$. By
+Lemma~\ref{lem:r76}, $h$ does not take the third colour on $[9,m_0]$. Hence $h$ uses at most two colours on
+$[1,m_0]$, and Lemma~\ref{lem:e4} shows that the prefix is $\Pz$.
+\end{proof}
+
+%=====================================================================
+\section{The prefix $\Pz$ leads to a contradiction}\label{sec:p0}
+
+Throughout this section $a\ge7$, $c$ is a $3$-colouring of $[1,L]$ without monochromatic solution, and the prefix of
+$c$ is $\Pz$. Name the colours so that $h(1..8)=\cA\cA\cB\cA\cA\cB\cA\cA$, and let $\cC$ be the third colour. Thus
+\[h(3)=h(6)=\cB,\qquad h(1)=h(2)=h(4)=h(5)=h(7)=h(8)=\cA .\]
+
+\subsection{The third colour is absent below $M$}
+\begin{lemma}[nine columns]\label{lem:nine}
+If $9\le t\le M$ then $h(t)\ne\cC$.
+\end{lemma}
+\begin{proof}
+Suppose $h(t)=\cC$. Consider the two rows $f(0),\dots,f(8)$ and $f(t),\dots,f(t+8)$; since $t+8\le M+8=F$, these
+are defined. Index the nine columns by $i\in[0,8]$, the cells of column $i$ being $f(i)$ and $f(t+i)$.
+\begin{enumerate}
+\item By (AB) with difference $t$ and $h(t)=\cC$, no column has $\cC$ in both cells.
+\item Within a row, two cells at distance $\delta\in[1,8]$ are not both of colour $h(\delta)$. For $\delta\in\{3,6\}$
+this colour is $\cB$; for $\delta\in\{1,2,4,5,7,8\}$ it is $\cA$.
+\item Split the columns into the three classes $i\equiv0,1,2\pmod 3$. Two cells of one row in the same class are at
+distance $3$ or $6$, so each row has at most one $\cB$ in each class. Two cells of one row in different classes are
+at a distance in $\{1,2,4,5,7,8\}$, so they are not both $\cA$; hence all cells coloured $\cA$ in one row lie in a
+single class.
+\item Therefore the cells coloured $\cA$ in the two rows lie in at most two classes, and some class $\gamma$ contains
+no $\cA$ in either row. In each row the three cells of class $\gamma$ contain at most one $\cB$ and no $\cA$, hence at
+least two $\cC$. So the six cells of class $\gamma$ contain at least four $\cC$, distributed over three columns; some
+column has $\cC$ in both cells, contradicting (1).\qedhere
+\end{enumerate}
+\end{proof}
+
+So $h$ takes only the colours $\cA,\cB$ on $[1,M]$, with $h(3)=\cB$.
+
+\subsection{Two-colour uniqueness}
+\begin{theorem}\label{thm:u2c}
+Let $a\ge7$ and let $g\colon[1,M]\to\{\cA,\cB\}$ have no monochromatic BB-triple inside $[1,M]$, with $g(3)=\cB$. Then
+$g=h^\ast$ on $[1,M]$.
+\end{theorem}
+\begin{proof}
+\emph{Step 1: $g=\cB$ on $\{3,6,\dots,3(a-3)\}$.} Apply Lemma~\ref{lem:chain} with $m=M$ for $k=2,\dots,a-3$; the
+largest index needed is $(a-3)(a+3)+a=a^2+a-9\le M$.
+
+\emph{Step 2: $g(3(a-2))=g(3(a-1))=g(3a)=\cB$.} Put
+\[d=3(a-2),\ e=3(a-1),\ p=a+3,\ r=a^2-a+3,\ s=a^2+3,\ v=2a-6,\ w=a^2+a-6,\ v_3=a-6 .\]
+All these lie in $[1,M]$ for $a\ge7$. The following are BB-triples (the last column verifies $z=y+au$):
+\begin{center}\begin{tabular}{llll}\toprule
+label & triple & $u$ & check\\\midrule
+T1 & $\tri{3}{3}{p}$ & $1$ & $3+a=p$\\
+T2 & $\tri{d}{p}{r}$ & $a-2$ & $a+3+a(a-2)=a^2-a+3$\\
+T3 & $\tri{3}{r}{s}$ & $1$ & $a^2-a+3+a=a^2+3$\\
+T4 & $\tri{e}{3}{r}$ & $a-1$ & $3+a(a-1)=a^2-a+3$\\
+T5 & $\tri{e}{p}{s}$ & $a-1$ & $a+3+a(a-1)=a^2+3$\\
+T6 & $\tri{3}{v}{d}$ & $1$ & $2a-6+a=3a-6$\\
+T7 & $\tri{d}{d}{w}$ & $a-2$ & $3a-6+a(a-2)=a^2+a-6$\\
+T8 & $\tri{e}{v}{w}$ & $a-1$ & $2a-6+a(a-1)=a^2+a-6$\\
+T9 & $\tri{6}{v_3}{d}$ & $2$ & $a-6+2a=3a-6$\\
+T10 & $\tri{3a}{v_3}{w}$ & $a$ & $a-6+a^2=a^2+a-6$\\\bottomrule
+\end{tabular}\end{center}
+(a) Suppose $g(d)=\cA$. By T1 ($g(3)=\cB$) $g(p)=\cA$; by T2 $g(r)=\cB$; by T3 $g(s)=\cA$; by T4 ($g(3)=g(r)=\cB$)
+$g(e)=\cA$; now T5 is monochromatic $\cA$. Hence $g(d)=\cB$.
+
+(b) By T6 ($g(3)=g(d)=\cB$) $g(v)=\cA$; by T7 $g(w)=\cA$; by T8, $g(e)=\cB$.
+
+(c) By T9 ($g(6)=g(d)=\cB$, using $6\in\{3,\dots,3(a-3)\}$) $g(v_3)=\cA$; by T10 ($g(v_3)=g(w)=\cA$), $g(3a)=\cB$.
+
+So $g=\cB$ on $\Bset$.
+
+\emph{Step 3: $g=\cA$ on $[1,M]\setminus\Bset$.} Let $n\in[1,M]\setminus\Bset$. Since $3\nmid a$ there is a unique
+$u_0\in\{1,2,3\}$ with $au_0\equiv n\pmod3$.
+
+\emph{Case $n\ge au_0+3$.} For $u\equiv u_0\pmod 3$ with $1\le u\le a$, the numbers $au+3v$ ($1\le v\le a$) are
+exactly the numbers $\equiv n\pmod 3$ in the interval $I_u=[au+3,\,au+3a]$. For consecutive such $u$ and $u+3$ the
+interval $I_{u+3}$ begins at $a(u+3)+3=(au+3a)+3$, i.e.\ three after the end of $I_u$, so the intervals $I_u$
+cover every number $\equiv n\pmod3$ from $au_0+3$ up to $au_{\max}+3a$, where $u_{\max}\ge a-2$ is the largest
+admissible $u$. Since $au_{\max}+3a\ge a(a-2)+3a=a^2+a>M\ge n$, we can write $n=au+3v$ with $1\le u,v\le a$. Then
+$\tri{3u}{3v}{n}$ is a BB-triple with $3u,3v\in\Bset$, so $g(n)=\cA$.
+
+\emph{Case $n<au_0+3$.} Then $n\le au_0$. If $u_0=3$ then $n\equiv0\pmod3$ and $n\le3a$, i.e.\ $n\in\Bset$, which is
+excluded. If $u_0=1$ then $n\le a$ and $n+2a\equiv a+2a\equiv0\pmod3$ with $2a<n+2a\le3a$, so $n+2a\in\Bset$; the
+BB-triple $\tri{6}{n}{n+2a}$ gives $g(n)=\cA$. If $u_0=2$ then $n\le2a$ and $n+a\equiv3a\equiv0\pmod3$ with
+$a<n+a\le3a$, so $n+a\in\Bset$; the BB-triple $\tri{3}{n}{n+a}$ gives $g(n)=\cA$.
+\end{proof}
+
+\begin{corollary}\label{cor:hstar}
+$h=h^\ast$ on $[1,M]$.
+\end{corollary}
+\begin{proof}
+By Lemma~\ref{lem:nine} and the prefix, $h$ is a two-colouring of $[1,M]$ by $\cA,\cB$ with $h(3)=\cB$; it has no
+monochromatic BB-triple. Apply Theorem~\ref{thm:u2c}.
+\end{proof}
+
+\subsection{The top of the range of $h$}
+\begin{lemma}[tail]\label{lem:tail}
+$h(H-2)=h(H-1)=\cA$ and $h(H)=\cC$. Consequently $h=h^\ast$ on $[1,H-1]$.
+\end{lemma}
+\begin{proof}
+\emph{An auxiliary value.} Let $q_T=11$ if $a\equiv1$ and $q_T=10$ if $a\equiv2\pmod 3$. Then $3\mid1+aq_T$, and
+$s_T=(1+aq_T)/3$ satisfies $3a<s_T\le M$ (as $a\ge7$). Hence $h(s_T)=h^\ast(s_T)=\cA$ and, by (ID), $f(q_T)=\cA$.
+
+\emph{$h(H-1)\ne\cB$ and $h(H-2)\ne\cB$.} Note $H-1=a^2+a$ and $H-2=a^2+a-1$.
+\begin{itemize}
+\item $\tri{3(a-2)}{3a}{H-1}$ is a BB-triple ($u=a-2$: $3a+a(a-2)=a^2+a$) whose first two entries lie in $\Bset$.
+\item If $a\equiv1\pmod 3$: $\tri{3a}{a-1}{H-2}$ ($u=a$: $a-1+a^2$); here $a-1\equiv0\pmod 3$ and $3\le a-1\le3a$, so
+$a-1\in\Bset$.
+\item If $a\equiv2\pmod 3$: $\tri{3(a-1)}{2a-1}{H-2}$ ($u=a-1$: $2a-1+a(a-1)=a^2+a-1$); here $2a-1\equiv0\pmod 3$
+and $2a-1\le3a$, so $2a-1\in\Bset$.
+\end{itemize}
+
+\emph{$h(t)\ne\cC$ for $t\in\{H-2,H-1\}$.} Suppose $h(t)=\cC$. Consider the rows $f(0),f(3),f(6)$ and
+$f(t),f(t+3),f(t+6)$; note $t+6\le H+5=F$. Column $j\in\{0,3,6\}$ consists of $f(j)$ and $f(t+j)$.
+\begin{itemize}
+\item By (AB) with difference $t$, no column has $\cC$ in both cells.
+\item No cell is $\cA$. For the first row, the distances from $q_T$ to $0,3,6$ are $\{11,8,5\}$ or $\{10,7,4\}$; they
+are not multiples of $3$, so $h$ has colour $\cA$ at these distances, and since $f(q_T)=\cA$, (AB) forbids $\cA$. For
+the second row the distances $t+j-q_T$ lie in $[a^2+a-12,\,a^2+a-4]\subseteq(3a,M]$ (as $a\ge7$), where $h=h^\ast=\cA$,
+and the same argument applies.
+\item Within a row the distances are $3$ and $6$, where $h=\cB$; so each row has at most one $\cB$.
+\end{itemize}
+Hence each row has at least two $\cC$, four $\cC$ in three columns, and some column is $\cC$ in both cells: a
+contradiction. So $h(H-2)=h(H-1)=\cA$; since $H-2,H-1>3a$ this agrees with $h^\ast$.
+
+\emph{$h(H)\ne\cA$.} $\tri{3a+3}{1}{H}$ is a BB-triple ($u=a+1$: $1+a(a+1)=H$) with $h(3a+3)=h^\ast(3a+3)=\cA$ (as
+$3a<3a+3\le M$) and $h(1)=\cA$.
+
+\emph{$h(H)\ne\cB$.} If $a\equiv2\pmod 3$: $\tri{3a}{a+1}{H}$ ($u=a$: $a+1+a^2=H$), and $a+1\in\Bset$. If
+$a\equiv1\pmod 3$: $\tri{3(a-1)}{2a+1}{H}$ ($u=a-1$: $2a+1+a(a-1)=H$), and $2a+1\in\Bset$. In both cases the first two
+entries lie in $\Bset$.
+
+Hence $h(H)=\cC$.
+\end{proof}
+
+\subsection{$L$ has no admissible colour}
+\begin{proposition}\label{prop:L}
+There is no colour available for $L$.
+\end{proposition}
+\begin{proof}
+Let $q_0\in\{1,2\}$ with $3\mid1+aq_0$ ($q_0=2$ if $a\equiv1$, $q_0=1$ if $a\equiv2\pmod 3$), and let
+$Q=\{q_0+3j:0\le j\le a\}$.
+
+\emph{The colours of $f$ on $Q$.} For $q=q_0+3j\in Q$ put $s_j=(1+aq)/3=s_0+aj$. Then $1\le s_j\le s_0+a^2\le
+(1+2a)/3+a^2\le M$ (as $a\ge7$), so by (ID) and Corollary~\ref{cor:hstar}, $f(q)=h^\ast(s_j)$. As $3\nmid a$, exactly
+one $j\in\{0,1,2\}$ makes $s_j$ divisible by $3$, and for it $s_j\le s_0+2a\le3a$, so $f(q_0+3j)=\cB$. For the other
+two $j\in\{0,1,2\}$, and for all $j\ge3$ (where $s_j>3a$), $f(q_0+3j)=\cA$. In particular:
+\begin{itemize}
+\item one of $f(q_0)$, $f(q_0+3)$ is $\cA$, at a position $p_{\rm low}\le5$;
+\item $f(p_{\rm high})=\cA$ for $p_{\rm high}=q_0+3a$ (here $j=a\ge3$), and $p_{\rm high}\le 3a+2<H$.
+\end{itemize}
+
+\emph{The rule.} If $f(q)=f(q')=\cA$ with $1\le q'-q\le H-1$, then by (AB) $h(q'-q)\ne\cA$, i.e.\ (by
+Lemma~\ref{lem:tail}) $q'-q\in\Bset$. In particular $q'-q$ is a multiple of $3$ at most $3a$.
+
+\emph{(1) Every position $q\in[0,H+6]$ with $f(q)=\cA$ satisfies $q\equiv q_0\pmod 3$.} Otherwise $|q-p_{\rm high}|$
+is not a multiple of $3$ and nonzero, so by the rule $|q-p_{\rm high}|\ge H$. If $q>p_{\rm high}$ this gives
+$q\ge H+p_{\rm high}\ge H+3a+1>H+6$; if $q<p_{\rm high}$ it gives $q\le p_{\rm high}-H<0$. Both are impossible.
+
+\emph{(2) $f(q)\ne\cA$ for $H\le q\le H+5$.} If $f(q)=\cA$ then $q\equiv q_0\pmod3$ by (1), and $\delta=q-p_{\rm
+high}$ is a multiple of $3$ with $\delta\ge H-3a-2=a^2-2a-1>3a$ (as $a\ge6$) and $\delta\le H+5-3a-1<H$. So $\delta\notin\Bset$,
+contradicting the rule.
+
+\emph{(3) One of $f(H)$, $f(H+3)$ is $\cB$.} The positions $0$ and $3$ are $\not\equiv q_0\pmod 3$, so by (1)
+$f(0),f(3)\in\{\cB,\cC\}$; they are not both $\cB$, by (AB) with difference $3$ ($h(3)=\cB$). By (2),
+$f(H),f(H+3)\in\{\cB,\cC\}$. By (AB) with difference $H$ and $h(H)=\cC$ (Lemma~\ref{lem:tail}), $f(0),f(H)$ are not
+both $\cC$, and $f(3),f(H+3)$ are not both $\cC$. If $f(0)=\cC$ then $f(H)=\cB$; otherwise $f(3)=\cC$ and
+$f(H+3)=\cB$.
+
+\emph{(4) $f(6)=\cC$.} By (1), $f(6)\ne\cA$. Suppose $f(6)=\cB$. Then $f(0)\ne\cB$ (difference $6$, $h(6)=\cB$) and
+$f(3)\ne\cB$ (difference $3$), so $f(0)=f(3)=\cC$, and as in (3) $f(H)=f(H+3)=\cB$. But $f(H),f(H+3)$ are at
+difference $3$ and $h(3)=\cB$: a contradiction.
+
+\emph{(5) The colour of $L$.} Recall $c(L)=f(H+6)$.
+\begin{itemize}
+\item $f(H+6)\ne\cC$: (AB) with difference $H$ between positions $6$ and $H+6$, with $h(H)=\cC$ and $f(6)=\cC$.
+\item $f(H+6)\ne\cB$: by (3) one of $f(H),f(H+3)$ is $\cB$, at difference $6$ or $3$ from $H+6$, and $h(6)=h(3)=\cB$.
+\item $f(H+6)\ne\cA$: the difference $\delta=H+6-p_{\rm high}=a^2-2a+7-q_0$ satisfies $3a<\delta\le M$ (as $a\ge7$),
+so $h(\delta)=h^\ast(\delta)=\cA$, while $f(p_{\rm high})=\cA$.
+\end{itemize}
+All three colours are excluded.
+\end{proof}
+
+%=====================================================================
+\section{Proof of the main theorem}
+
+\begin{proof}[Proof of Theorem~\ref{thm:upper}]
+For $4\le a\le26$ this is Lemma~\ref{lem:small}. Let $a\ge27$ and suppose $c$ is a $3$-colouring of $[1,L]$ without
+monochromatic solution. Its restriction to $[1,L-1]$ is solution-free, so by Corollary~\ref{cor:p0} its prefix is
+$\Pz$. Section~\ref{sec:p0} (which needs $a\ge7$) then shows that $c(L)$ admits no colour, a contradiction.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Theorem~\ref{thm:azb} gives $R_3(ax+3y=3z)\ge L$, and Theorem~\ref{thm:upper} gives $R_3(ax+3y=3z)\le L$.
+\end{proof}
+
+%=====================================================================
+\section{Range conditions}\label{sec:ranges}
+
+The following inequalities were used above. Each is elementary; all of them, and every BB-triple identity of
+Sections~\ref{sec:53} and \ref{sec:p0}, are also checked mechanically for every $a\le400$ with $3\nmid a$ by
+\texttt{tools/check\_hand\_proofs.py}.
+\begin{enumerate}
+\item $3H\le L-1$ and $1+aF=L-a$ (Section~\ref{sec:setup}).
+\item For $a\ge23$: with $a=3m+1$ ($m\ge8$), $J=2m+4$, $m_0=6m^2+23m+17$, $F=9m^2+9m+8$ and $F-m_0-67=3m^2-14m-76\ge4$;
+with $a=3m+2$ ($m\ge7$), $J=2m+4$, $m_0=6m^2+25m+22$, $F=9m^2+15m+12$ and $F-m_0-67=3m^2-10m-77\ge0$. Both
+expressions increase with $m$. Also $m_0\le F-67<H$ and $147\le\min(H,F)$.
+\item For $a\ge7$: $v_3=a-6\ge1$; $a^2+3\le M$; $(a-3)(a+3)+a\le M$; $3a<s_T\le M$; $a^2+a-12>3a$; $3a+3\le M$;
+$(1+2a)/3+a^2\le M$; $a^2-2a-1>3a$; $3a<a^2-2a+7-q_0\le M$.
+\end{enumerate}
+
+%=====================================================================
+\section{Certificates}\label{sec:cert}
+
+\subsection{What is certified}
+\begin{center}\begin{tabular}{llr}\toprule
+claim & directory in \texttt{certificates/} & number\\\midrule
+Lemma~\ref{lem:small}, $4\le a\le26$ & \texttt{small\_a/} & 16\\
+Lemma~\ref{lem:W} & \texttt{lemma\_W/} & 2\\
+Lemma~\ref{lem:r76}, late case ($\mathtt R_X$) & \texttt{third\_colour\_late/} & 53\\
+Lemma~\ref{lem:r76}, early case ($\mathtt I_X$) & \texttt{third\_colour\_early/} & 53\\\midrule
+total used in the proof & & 124\\
+cross-check of Lemma~\ref{lem:W} & \texttt{lemma\_W\_alt/} & 2\\\bottomrule
+\end{tabular}\end{center}
+
+Every formula is in DIMACS format and comes with an LRAT proof of unsatisfiability produced by CaDiCaL~\cite{cadical}
+(commit \texttt{c6073042}) with options \texttt{--lrat --no-binary}. Each proof was checked with \texttt{lrat-check}
+from drat-trim (commit \texttt{2e3b2dc0}) and with the formally verified checker \texttt{cake\_lpr}~\cite{cakelpr}
+(commit \texttt{a36874a8}). A proof checker only certifies that the given formula is unsatisfiable; that each formula
+encodes what is stated above is ensured by the following.
+
+\subsection{Faithfulness of the formulas}
+\begin{itemize}
+\item The formulas $\mathtt Ua$, $\mathtt I_X$, $\mathtt R_X$ are generated by short programs
+(\texttt{small\_a/ucert.py} and \texttt{two64.py} in the two \texttt{third\_colour\_*} directories) that implement the definitions of Sections~\ref{sec:small}
+and~\ref{sec:53} literally.
+\item For Lemma~\ref{lem:W}, each formula comes with a table (\texttt{*.coords.json}) giving, for every variable, its
+vertex as an integer polynomial in $k$. The program \texttt{lemma\_W/audit/audit\_free.py}, reading only the DIMACS
+file and this table, checks that every clause is (i) an exactly-one-colour clause, (ii) an (AB) clause whose three
+vertices satisfy $q'-q\equiv t$ as polynomials with $t\ge1$, (iii) a (BB) clause whose vertices satisfy
+$z-y\equiv(3k+\rho)u$ as polynomials with $u\in\{1,2,k,k+1\}$, or (iv) one of the auxiliary clauses of the target;
+and that every vertex lies in its range for every integer $k\ge5$. The program
+\texttt{concrete\_free.py} instantiates every (AB)/(BB) clause for $5\le k\le60$ and checks on integers that it
+comes from a solution of $ax+3y=3z$ inside $[1,L-1]$. The program \texttt{glue.py} enumerates all $3^8$
+colourings of $h(1..8)$ and, for each, decides whether the target clause together with the clauses defining its
+auxiliary variables is satisfiable. It checks that this is the case exactly for the colourings whose normalisation
+is \emph{not} admissible; equivalently, the colourings that Lemma~\ref{lem:W} leaves open are exactly those whose
+normalisation is one of the $53$ admissible words used in Lemma~\ref{lem:r76}.
+\item The cross-check formulas in \texttt{lemma\_W\_alt/} contain the same base clauses as the two formulas in
+\texttt{lemma\_W/} and express the target differently (one blocking clause per allowed colouring of $h(1..8)$); they are also
+unsatisfiable.
+\end{itemize}
+
+\subsection{Replay and data availability}
+All formulas, proofs, coordinate tables, generators and audit scripts are contained in the repository that
+accompanies this document, together with a SHA-256 manifest of every file. The script
+\texttt{certificates/replay.sh} checks the SHA-256 of every formula and runs both proof checkers on every
+certificate; see \texttt{README.md}. On 18 October 2026 all $126$ certificates were replayed from a clean copy of the
+repository with the checker versions above, with no failure.
+
+%=====================================================================
+\appendix
+\section{The 53 admissible prefixes}\label{app:53}
+For each admissible word $X$ the row length $K=K_X$ of Lemma~\ref{lem:r76} and the bound $F_X=K_X+79$ of the early
+case.
+\begin{center}
+{\small
+\begin{tabular}{lrr@{\qquad}lrr@{\qquad}lrr}\toprule
+$X$ & $K$ & $F_X$ & $X$ & $K$ & $F_X$ & $X$ & $K$ & $F_X$\\\midrule
+$\cA\cA\cA\cA\cA\cA\cB\cB$ & 68 & 147 & $\cA\cA\cB\cB\cA\cB\cA\cA$ & 17 & 96 & $\cA\cB\cA\cB\cA\cA\cB\cB$ & 15 & 94\\
+$\cA\cA\cA\cA\cB\cA\cA\cB$ & 60 & 139 & $\cA\cA\cB\cB\cA\cB\cA\cB$ & 13 & 92 & $\cA\cB\cA\cB\cB\cA\cA\cA$ & 15 & 94\\
+$\cA\cA\cA\cA\cB\cA\cB\cB$ & 25 & 104 & $\cA\cA\cB\cB\cA\cB\cB\cA$ & 14 & 93 & $\cA\cB\cA\cB\cB\cA\cA\cB$ & 15 & 94\\
+$\cA\cA\cA\cB\cA\cA\cA\cB$ & 13 & 92 & $\cA\cA\cB\cB\cA\cB\cB\cB$ & 14 & 93 & $\cA\cB\cA\cB\cB\cA\cB\cA$ & 17 & 96\\
+$\cA\cA\cA\cB\cA\cA\cB\cA$ & 51 & 130 & $\cA\cA\cB\cB\cB\cB\cA\cA$ & 17 & 96 & $\cA\cB\cA\cB\cB\cA\cB\cB$ & 17 & 96\\
+$\cA\cA\cA\cB\cA\cA\cB\cB$ & 14 & 93 & $\cA\cA\cB\cB\cB\cB\cA\cB$ & 13 & 92 & $\cA\cB\cB\cA\cA\cB\cA\cA$ & 16 & 95\\
+$\cA\cA\cA\cB\cB\cA\cA\cA$ & 41 & 120 & $\cA\cA\cB\cB\cB\cB\cB\cA$ & 14 & 93 & $\cA\cB\cB\cA\cA\cB\cA\cB$ & 15 & 94\\
+$\cA\cA\cA\cB\cB\cA\cA\cB$ & 14 & 93 & $\cA\cA\cB\cB\cB\cB\cB\cB$ & 13 & 92 & $\cA\cB\cB\cA\cA\cB\cB\cA$ & 16 & 95\\
+$\cA\cA\cA\cB\cB\cA\cB\cA$ & 21 & 100 & $\cA\cB\cA\cA\cA\cA\cA\cB$ & 27 & 106 & $\cA\cB\cB\cA\cA\cB\cB\cB$ & 15 & 94\\
+$\cA\cA\cA\cB\cB\cA\cB\cB$ & 17 & 96 & $\cA\cB\cA\cA\cA\cA\cB\cA$ & 43 & 122 & $\cA\cB\cB\cA\cB\cB\cA\cA$ & 15 & 94\\
+$\cA\cA\cB\cA\cA\cB\cA\cA$ & 10 & 89 & $\cA\cB\cA\cA\cA\cA\cB\cB$ & 22 & 101 & $\cA\cB\cB\cA\cB\cB\cA\cB$ & 20 & 99\\
+$\cA\cA\cB\cA\cA\cB\cA\cB$ & 11 & 90 & $\cA\cB\cA\cA\cB\cA\cA\cA$ & 33 & 112 & $\cA\cB\cB\cA\cB\cB\cB\cA$ & 17 & 96\\
+$\cA\cA\cB\cA\cA\cB\cB\cA$ & 13 & 92 & $\cA\cB\cA\cA\cB\cA\cA\cB$ & 25 & 104 & $\cA\cB\cB\cA\cB\cB\cB\cB$ & 24 & 103\\
+$\cA\cA\cB\cA\cA\cB\cB\cB$ & 13 & 92 & $\cA\cB\cA\cA\cB\cA\cB\cA$ & 15 & 94 & $\cA\cB\cB\cB\cA\cB\cA\cA$ & 17 & 96\\
+$\cA\cA\cB\cA\cB\cB\cA\cA$ & 17 & 96 & $\cA\cB\cA\cA\cB\cA\cB\cB$ & 16 & 95 & $\cA\cB\cB\cB\cA\cB\cB\cA$ & 17 & 96\\
+$\cA\cA\cB\cA\cB\cB\cA\cB$ & 13 & 92 & $\cA\cB\cA\cB\cA\cA\cA\cA$ & 15 & 94 & $\cA\cB\cB\cB\cB\cB\cA\cA$ & 17 & 96\\
+$\cA\cA\cB\cA\cB\cB\cB\cA$ & 14 & 93 & $\cA\cB\cA\cB\cA\cA\cA\cB$ & 15 & 94 & $\cA\cB\cB\cB\cB\cB\cB\cA$ & 44 & 123\\
+$\cA\cA\cB\cA\cB\cB\cB\cB$ & 13 & 92 & $\cA\cB\cA\cB\cA\cA\cB\cA$ & 15 & 94 & & &\\
+\bottomrule
+\end{tabular}}
+\end{center}
+The eleven non-admissible words $\cA w_2\cdots w_8$ (with $w_3=w_6$) are those listed in Section~\ref{sec:W}.
+
+\section*{Use of AI tools}
+The proof strategy, the computer encodings, the checking scripts and the text of this document were developed with
+substantial assistance from AI systems (Anthropic Claude and OpenAI GPT), which also cross-checked one another's
+computations independently. All unsatisfiability claims rest on the certificates and checkers described in
+Section~\ref{sec:cert}. This document has not been peer reviewed by a human expert.
+
+\begin{thebibliography}{9}
+\bibitem{AZB} T.~Ahmed, L.~Zaman, C.~Bright, \emph{Symbolic sets for proving bounds on Rado numbers}, in: Proc.\ SC$^2$
+2025, CEUR Workshop Proceedings Vol.~4116 (2025); arXiv:2505.12085v3.
+\bibitem{cadical} A.~Biere, T.~Faller, K.~Fazekas, M.~Fleury, N.~Froleyks, F.~Pollitt, \emph{CaDiCaL 2.0}, in: CAV 2024,
+LNCS 14682, Springer (2024) 133--152.
+\bibitem{LRAT} L.~Cruz-Filipe, M.~J.~H.~Heule, W.~A.~Hunt, M.~Kaufmann, P.~Schneider-Kamp, \emph{Efficient certified
+RAT verification}, in: CADE-26, LNCS 10395, Springer (2017) 220--236.
+\bibitem{cakelpr} Y.~K.~Tan, M.~J.~H.~Heule, M.~O.~Myreen, \emph{cake\_lpr: verified propagation redundancy checking in
+CakeML}, in: TACAS 2021, LNCS 12652, Springer (2021) 223--241.
+\end{thebibliography}
+\end{document}
