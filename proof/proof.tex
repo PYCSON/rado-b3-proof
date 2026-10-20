@@ -17,7 +17,7 @@
 
 \title{The three-colour Rado numbers of $ax+3y=3z$}
 \author{Puyi Sun}
-\date{18 October 2026. Computer-assisted proof candidate; not peer reviewed.}
+\date{Version 0.1.1, 20 October 2026 (first public version 18 October 2026). Computer-assisted proof candidate; not peer reviewed.}
 
 \begin{document}
 \begin{abstract}
@@ -56,6 +56,16 @@ By Theorem~\ref{thm:azb} it remains to prove the upper bound:
 Let $a\ge4$, $3\nmid a$, and $L=a^3+a^2+7a+1$. Every $3$-colouring of $[1,L]$ contains a monochromatic solution of
 $ax+3y=3z$.
 \end{theorem}
+
+\subsection*{Related work}
+Since $ax+by=bz$ is equivalent to $b(z-y)=ax$, the numbers $R_3(ax+by=bz)$ are the numbers $R_3(A(x-y)=Bz)$
+studied by Chang, De Loera and Wesley \cite{CDW} with $(A,B)=(b,a)$. They proved $R_3(A(x-y)=Bz)=A^3$ for
+$\gcd(A,B)=1$ and $A\ge B+2$, and $R_3(A(x-y)=(A-1)z)=A^3+(A-1)^2$ for $A\ge3$; in the present notation these cover
+$a\le b-1$ with $\gcd(a,b)=1$ and $b\ge3$, whereas Theorem~\ref{thm:main} concerns $a>b=3$. Their table of exact values contains
+$R_3(3(x-y)=Bz)$ for $B\le15$, which agrees with $a^3+a^2+7a+1$ for $4\le a\le14$, $3\nmid a$; Ahmed, Zaman and
+Bright computed the values for $a\le30$ \cite{AZB}. The method of Lemma~\ref{lem:W}, a propositional formula
+whose variables are indexed by integer polynomials in a parameter, is of the same kind as the symbolic encoding of
+\cite[Lemma~4.5]{CDW}; see also the symbolic sets of \cite{AZB}.
 
 \subsection*{Structure of the proof}
 \begin{enumerate}
@@ -589,6 +599,8 @@ Section~\ref{sec:cert}. This document has not been peer reviewed by a human expe
 \begin{thebibliography}{9}
 \bibitem{AZB} T.~Ahmed, L.~Zaman, C.~Bright, \emph{Symbolic sets for proving bounds on Rado numbers}, in: Proc.\ SC$^2$
 2025, CEUR Workshop Proceedings Vol.~4116 (2025); arXiv:2505.12085v3.
+\bibitem{CDW} Y.~Chang, J.~A.~De~Loera, W.~J.~Wesley, \emph{Rado numbers and SAT computations}, in: ISSAC 2022,
+ACM (2022), doi:10.1145/3476446.3535494; arXiv:2210.03262.
 \bibitem{cadical} A.~Biere, T.~Faller, K.~Fazekas, M.~Fleury, N.~Froleyks, F.~Pollitt, \emph{CaDiCaL 2.0}, in: CAV 2024,
 LNCS 14682, Springer (2024) 133--152.
 \bibitem{LRAT} L.~Cruz-Filipe, M.~J.~H.~Heule, W.~A.~Hunt, M.~Kaufmann, P.~Schneider-Kamp, \emph{Efficient certified

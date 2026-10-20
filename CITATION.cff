@@ -5,7 +5,7 @@ type: dataset
 authors:
   - family-names: Sun
     given-names: Puyi
-version: "0.1.0"
+version: "0.1.1"
 abstract: "Computer-assisted proof candidate that R_3(ax+3y=3z) = a^3+a^2+7a+1 for all integers a >= 4 with 3 not dividing a (case b=3 of Conjecture 1.1 of Ahmed, Zaman and Bright). Not peer reviewed."
 keywords: ["Rado numbers", "Ramsey theory", "SAT", "LRAT", "computer-assisted proof"]
 preferred-citation:

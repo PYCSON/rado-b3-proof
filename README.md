@@ -11,6 +11,11 @@ This is the case `b = 3` of Conjecture 1.1 of T. Ahmed, L. Zaman and C. Bright, 
 on Rado Numbers* (SC² 2025; arXiv:2505.12085). The lower bound is their Theorem 1.3. This repository contains a
 proof of the upper bound.
 
+Related work: since `ax + by = bz` is equivalent to `b(z − y) = ax`, these are the numbers `R_3(A(x − y) = Bz)` studied by
+Y. Chang, J. A. De Loera and W. J. Wesley, *Rado Numbers and SAT Computations* (ISSAC 2022; arXiv:2210.03262), with
+`(A, B) = (b, a)`. Their table contains the `b = 3` values for `a ≤ 14`, and their symbolic SAT encoding (Lemma 4.5) is a
+methodological precedent for the parametric formulas of Lemma W. See the related-work paragraph in Section 1 of the proof.
+
 **Status:** computer-assisted proof candidate. Internally checked; not peer reviewed.
 
 ## Contents
